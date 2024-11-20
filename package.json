@@ -14,7 +14,7 @@
     "ethers": "^6.13.4"
   },
   "name": "todo-app",
-  "description": "This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.",
+  "description": "Creating a simple Blockchain based ToDo list using Hardhat, React and NodeJS.",
   "version": "1.0.0",
   "main": "hardhat.config.js",
   "directories": {
