@@ -2,7 +2,7 @@ require("@nomiclabs/hardhat-waffle");
 require("@nomicfoundation/hardhat-ethers");
 require('dotenv').config();
 module.exports = {
-  solidity: "0.8.4",
+  solidity: "0.8.26",
   networks: {
     sepolia: {
       url: process.env.ALCHEMY_SEPOLIA_URL,
