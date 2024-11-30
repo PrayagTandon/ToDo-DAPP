@@ -68,11 +68,19 @@ function App() {
 
   const addTask = async (event) => {
     event.preventDefault();
+
+    const importanceMap = {
+      Low: 0,
+      Medium: 1,
+      High: 2,
+    };
+
     const task = {
       taskText: input,
-      importance,
+      importance: importanceMap[importance], // Map string to integer
       isDeleted: false,
     };
+
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -84,9 +92,10 @@ function App() {
           signer
         );
 
+        // Pass the mapped integer for importance
         await TaskContract.addTask(task.taskText, task.importance, task.isDeleted);
         setInput('');
-        setImportance('Low');
+        setImportance('Low'); // Reset importance to default
         getAllTasks();
       } else {
         console.error("Ethereum object does not exist.");
@@ -95,6 +104,7 @@ function App() {
       console.error("Error adding task: ", error);
     }
   };
+
 
   const deleteTask = (key) => async () => {
     try {
