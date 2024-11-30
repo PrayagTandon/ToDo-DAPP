@@ -1,0 +1,1 @@
+export const TaskContractAddress = "DEPLOYED_CONTRACT_ADDRESS"
