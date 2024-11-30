@@ -5,7 +5,7 @@ import './App.css';
 import { TaskContractAddress } from '../config';
 import TaskAbi from './TaskContract.json';
 
-const { ethers } = require('ethers');
+import { ethers } from 'ethers';
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -16,27 +16,40 @@ function App() {
   const getAllTasks = async () => {
     try {
       const { ethereum } = window;
-      if (ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-        const TaskContract = new ethers.Contract(
-          TaskContractAddress,
-          TaskAbi.abi,
-          signer
-        );
-        let allTasks = await TaskContract.getMyTasks();
-        setTasks(allTasks);
-      } else {
-        console.log("Ethereum object does not exist.");
+      if (!ethereum) {
+        console.error("Ethereum object not found");
+        return;
       }
+
+      const provider = new ethers.BrowserProvider(ethereum); // Use Web3Provider if ethers.js v5
+      const signer = await provider.getSigner();
+      const TaskContract = new ethers.Contract(
+        TaskContractAddress,
+        TaskAbi.abi,
+        signer
+      );
+
+      const rawTasks = await TaskContract.getMyTasks();
+      console.log("Raw Tasks:", rawTasks);
+
+      // Format each task for React state
+      const formattedTasks = rawTasks.map((task) => ({
+        id: task.id.toString(), // Convert BigNumber to string
+        username: task.username, // Address
+        taskText: task.taskText, // String
+        isDeleted: task.isDeleted, // Boolean
+      }));
+
+      console.log("Formatted Tasks:", formattedTasks);
+      setTasks(formattedTasks);
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching tasks:", error);
     }
-  }
+  };
 
   useEffect(() => {
     getAllTasks();
-  }, [tasks]);
+  }, []);
 
   const connectWallet = async () => {
     try {
@@ -96,7 +109,7 @@ function App() {
     setInput('');
   };
 
-  const deleteTask = key => async () => {
+  const deleteTask = key => async (taskId) => {
     console.log("Task ID to delete: " + key);
     try {
       const { ethereum } = window;
@@ -108,7 +121,11 @@ function App() {
           TaskAbi.abi,
           signer
         );
-        let deleteTx = await TaskContract.deleteTask(key, true);
+        let deleteTx = await TaskContract.deleteTask(taskId, true);
+        await deleteTx.wait();
+        setTasks((prevTasks) =>
+          prevTasks.filter((task) => task.id !== taskId)
+        );
         let allTasks = await TaskContract.getMyTasks();
         setTasks(allTasks);
       } else {
@@ -128,20 +145,20 @@ function App() {
         >Connect 🦊 MetaMask Wallet ➡ Sepolia Testnet</Button></div>
       ) : correctNetwork ? (
         <div className="App">
-          <img src={require('./todo.jpg')} style={{ width: "40%", height: "30%" }} />
+          {/* <img src={require('./todo.jpg')} style={{ width: "40%", height: "30%" }} /> */}
           <form style={{ margin: "20px 30px 20px" }}>
             <TextField id="outlined-basic" helperText="Enter a task then click the '+'" label="Task" style={{ margin: "0px 10px 30px" }} size="normal" value={input}
               onChange={event => setInput(event.target.value)} />
             <Button variant='text' color="info" style={{ fontSize: "28px", fontWeight: "bold" }} onClick={addTask}>+</Button>
           </form>
           <ul>
-            {tasks.map(item =>
+            {tasks.map((task) => (
               <Task
-                key={item.id}
-                taskText={item.taskText}
-                onClick={deleteTask(item.id)}
-              />)
-            }
+                key={task.id}
+                taskText={task.taskText}
+                onClick={() => deleteTask(task.id)}
+              />
+            ))}
           </ul>
         </div>
       ) : (

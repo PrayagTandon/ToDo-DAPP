@@ -26,21 +26,24 @@ contract TaskContract {
     }
  
     function getMyTasks() external view returns (Task[] memory) {
-        Task[] memory temporary = new Task[](tasks.length);
-        uint256 counter = 0;
-        for (uint256 i = 0; i < tasks.length; i++) {
-            if (taskToOwner[i] == msg.sender && tasks[i].isDeleted == false) {
-                temporary[counter] = tasks[i];
-                counter++;
-            }
+    uint256 counter = 0;
+    for (uint256 i = 0; i < tasks.length; i++) {
+        if (taskToOwner[i] == msg.sender && tasks[i].isDeleted == false) {
+            counter++;
         }
- 
-        Task[] memory result = new Task[](counter);
-        for (uint256 i = 0; i < counter; i++) {
-            result[i] = temporary[i];
-        }
-        return result;
     }
+
+    Task[] memory result = new Task[](counter);
+    uint256 index = 0;
+    for (uint256 i = 0; i < tasks.length; i++) {
+        if (taskToOwner[i] == msg.sender && tasks[i].isDeleted == false) {
+            result[index] = tasks[i];
+            index++;
+        }
+    }
+
+    return result;
+}
  
     function deleteTask(uint256 taskId, bool isDeleted) external {
         if (taskToOwner[taskId] == msg.sender) {
