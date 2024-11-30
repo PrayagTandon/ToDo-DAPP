@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { TextField, Button } from '@mui/material';
 import Task from './Task';
 import './App.css';
-import { TaskContractAddress } from './config.js';
+import { TaskContractAddress } from '../config';
 import TaskAbi from './TaskContract.json';
 
-const { ethers } = require("ethers");
+const { ethers } = require('ethers');
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -132,7 +132,7 @@ function App() {
           <form style={{ margin: "20px 30px 20px" }}>
             <TextField id="outlined-basic" helperText="Enter a task then click the '+'" label="Task" style={{ margin: "0px 10px 30px" }} size="normal" value={input}
               onChange={event => setInput(event.target.value)} />
-            <Button variant="contained" variant="text" color="info" style={{ fontSize: "28px", fontWeight: "bold" }} onClick={addTask}>+</Button>
+            <Button variant='text' color="info" style={{ fontSize: "28px", fontWeight: "bold" }} onClick={addTask}>+</Button>
           </form>
           <ul>
             {tasks.map(item =>
