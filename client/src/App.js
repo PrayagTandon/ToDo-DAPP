@@ -24,14 +24,17 @@ function App() {
           TaskAbi.abi,
           signer
         );
+
         const allTasks = await TaskContract.getMyTasks();
 
+        // Process tasks correctly, assuming `id` is already a number
         const processedTasks = allTasks.map((task) => ({
-          id: task.id.toNumber(),
+          id: task.id, // Directly use task.id
           taskText: task.taskText,
-          importance: task.importance, // 0: Low, 1: Medium, 2: High
+          importance: task.importance, // Enum value (0 = Low, 1 = Medium, 2 = High)
           isDeleted: task.isDeleted,
         }));
+
         setTasks(processedTasks);
       } else {
         console.error("Ethereum object does not exist.");
