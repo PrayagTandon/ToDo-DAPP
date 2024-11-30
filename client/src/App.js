@@ -1,6 +1,5 @@
-// App.js
 import React, { useState, useEffect } from 'react';
-import { TextField, Button } from '@mui/material';
+import { TextField, Button, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 import Task from './Task';
 import './App.css';
 import { TaskContractAddress } from './config.js';
@@ -10,6 +9,7 @@ const { ethers } = require("ethers");
 function App() {
   const [tasks, setTasks] = useState([]);
   const [input, setInput] = useState('');
+  const [importance, setImportance] = useState('Low');
   const [currentAccount, setCurrentAccount] = useState('');
   const [correctNetwork, setCorrectNetwork] = useState(false);
 
@@ -26,10 +26,10 @@ function App() {
         );
         const allTasks = await TaskContract.getMyTasks();
 
-        // Ensure tasks are properly structured
-        const processedTasks = allTasks.map((task, index) => ({
-          id: index,
+        const processedTasks = allTasks.map((task) => ({
+          id: task.id.toNumber(),
           taskText: task.taskText,
+          importance: task.importance, // 0: Low, 1: Medium, 2: High
           isDeleted: task.isDeleted,
         }));
         setTasks(processedTasks);
@@ -43,7 +43,7 @@ function App() {
 
   useEffect(() => {
     getAllTasks();
-  }, []); // Prevent infinite loop by using an empty dependency array
+  }, []);
 
   const connectWallet = async () => {
     try {
@@ -70,6 +70,7 @@ function App() {
     event.preventDefault();
     const task = {
       taskText: input,
+      importance,
       isDeleted: false,
     };
     try {
@@ -83,9 +84,10 @@ function App() {
           signer
         );
 
-        await TaskContract.addTask(task.taskText, task.isDeleted);
+        await TaskContract.addTask(task.taskText, task.importance, task.isDeleted);
         setInput('');
-        getAllTasks(); // Refresh tasks after adding
+        setImportance('Low');
+        getAllTasks();
       } else {
         console.error("Ethereum object does not exist.");
       }
@@ -107,7 +109,7 @@ function App() {
         );
 
         await TaskContract.deleteTask(key, true);
-        getAllTasks(); // Refresh tasks after deletion
+        getAllTasks();
       } else {
         console.error("Ethereum object does not exist.");
       }
@@ -119,11 +121,11 @@ function App() {
   return (
     <div>
       {currentAccount === '' ? (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <div className="flex justify-center items-center">
           <Button
             variant="contained"
             color="info"
-            style={{ justifyContent: "center", margin: "50px", fontSize: "28px", fontWeight: "bold" }}
+            className="mt-10 text-2xl"
             onClick={connectWallet}
           >
             Connect 🦊 MetaMask Wallet ➡ Sepolia Testnet
@@ -131,38 +133,49 @@ function App() {
         </div>
       ) : correctNetwork ? (
         <div className="App">
-          <form style={{ margin: "20px 30px 20px" }}>
+          <form className="flex flex-col items-center gap-4">
             <TextField
               id="outlined-basic"
-              helperText="Enter a task then click the '+'"
               label="Task"
-              style={{ margin: "0px 10px 30px" }}
-              size="normal"
               value={input}
               onChange={(event) => setInput(event.target.value)}
+              variant="outlined"
+              className="w-96"
             />
+            <FormControl className="w-96">
+              <InputLabel>Importance</InputLabel>
+              <Select
+                value={importance}
+                onChange={(event) => setImportance(event.target.value)}
+              >
+                <MenuItem value="Low">Low</MenuItem>
+                <MenuItem value="Medium">Medium</MenuItem>
+                <MenuItem value="High">High</MenuItem>
+              </Select>
+            </FormControl>
             <Button
               variant="contained"
-              color="info"
-              style={{ fontSize: "28px", fontWeight: "bold" }}
+              color="primary"
               onClick={addTask}
+              className="w-96"
             >
-              +
+              Add Task
             </Button>
           </form>
-          <ul>
+          <ul className="mt-10">
             {tasks.map((item) => (
               <Task
                 key={item.id}
                 taskText={item.taskText}
+                importance={item.importance}
                 onClick={deleteTask(item.id)}
               />
             ))}
           </ul>
         </div>
       ) : (
-        <div className="flex flex-col justify-center items-center mb-20 font-bold text-2xl gap-y-3">
-          <div>Connect to the Ethereum Sepolia Testnet and reload the page.</div>
+        <div className="flex justify-center items-center text-2xl font-bold">
+          Connect to the Ethereum Sepolia Testnet and reload the page.
         </div>
       )}
     </div>
