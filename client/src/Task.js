@@ -6,16 +6,16 @@ const Task = ({ taskText, importance, onClick }) => {
     const getBackgroundColor = () => {
         switch (importance) {
             case 'High':
-                return 'bg-red-300';
+                return 'bg-red-500';
             case 'Medium':
-                return 'bg-yellow-300';
+                return 'bg-yellow-500';
             default:
-                return 'bg-green-300';
+                return 'bg-green-500';
         }
     };
 
     return (
-        <List className={`todo__list ${getBackgroundColor()} rounded-lg shadow-md p-2`}>
+        <List className={`todo__list ${getBackgroundColor()}`} >
             <ListItem>
                 <ListItemText primary={taskText} />
             </ListItem>
@@ -25,3 +25,5 @@ const Task = ({ taskText, importance, onClick }) => {
 };
 
 export default Task;
+
+// ${getBackgroundColor()} rounded-lg shadow-md p-2

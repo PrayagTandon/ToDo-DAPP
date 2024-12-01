@@ -150,7 +150,7 @@ function App() {
               className="task-input"
             />
             <FormControl className="importance-select">
-              <InputLabel>Importance</InputLabel>
+              <InputLabel className='importance-input__label'>Importance</InputLabel>
               <Select
                 value={importance}
                 onChange={(event) => setImportance(event.target.value)}
