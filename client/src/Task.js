@@ -3,17 +3,16 @@ import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import './Task.css';
 
 const Task = ({ taskText, importance, onClick }) => {
-    // Determine background color based on importance
     const getBackgroundColor = () => {
         switch (importance) {
             case 0: // Low
                 return 'bg-green-500';
             case 1: // Medium
-                return 'bg-yellow-500';
+                return 'bg-yellow-300';
             case 2: // High
-                return 'bg-red-500';
+                return 'bg-red-300';
             default:
-                return 'bg-gray-500'; // Fallback color
+                return 'bg-gray-300'; // fallback color
         }
     };
 

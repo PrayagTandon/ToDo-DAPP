@@ -27,10 +27,11 @@ function App() {
         );
 
         const allTasks = await TaskContract.getMyTasks();
+
         const processedTasks = allTasks.map((task) => ({
           id: task.id,
           taskText: task.taskText,
-          importance: task.importance, // Ensure correct importance is used
+          importance: parseInt(task.importance),
           isDeleted: task.isDeleted,
         }));
 
@@ -42,7 +43,6 @@ function App() {
       console.error("Error fetching tasks: ", error);
     }
   };
-
 
   useEffect(() => {
     getAllTasks();
@@ -56,7 +56,7 @@ function App() {
         return;
       }
       const chainId = await ethereum.request({ method: 'eth_chainId' });
-      const sepoliaChainId = '0xaa36a7'; // 11155111
+      const sepoliaChainId = '0xaa36a7';
       if (chainId !== sepoliaChainId) {
         alert('You are not connected to the Sepolia Testnet.');
         return;
@@ -80,7 +80,7 @@ function App() {
 
     const task = {
       taskText: input,
-      importance: importanceMap[importance], // Map string to integer
+      importance: importanceMap[importance],
       isDeleted: false,
     };
 
@@ -98,10 +98,9 @@ function App() {
         console.log("Sending transaction to add task...");
         const tx = await TaskContract.addTask(task.taskText, task.importance, task.isDeleted);
 
-        // Wait for the transaction to be mined
-        console.log("Transaction sent. Waiting for confirmation...");
+        // console.log("Transaction sent. Waiting for confirmation...");
         await tx.wait();
-        console.log("Transaction confirmed. Task added!");
+        // console.log("Transaction confirmed. Task added!");
 
         // Fetch updated tasks from the blockchain
         getAllTasks();
@@ -129,15 +128,13 @@ function App() {
           signer
         );
 
-        console.log("Sending transaction to delete task...");
+        // console.log("Sending transaction to delete task...");
         const tx = await TaskContract.deleteTask(key, true);
 
-        // Wait for the transaction to be mined
-        console.log("Transaction sent. Waiting for confirmation...");
+        // console.log("Transaction sent. Waiting for confirmation...");
         await tx.wait();
-        console.log("Transaction confirmed. Task deleted!");
+        // console.log("Transaction confirmed. Task deleted!");
 
-        // Fetch updated tasks from the blockchain
         getAllTasks();
       } else {
         console.error("Ethereum object does not exist.");
