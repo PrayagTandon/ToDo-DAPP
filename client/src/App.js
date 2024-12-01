@@ -30,7 +30,7 @@ function App() {
         const processedTasks = allTasks.map((task) => ({
           id: task.id,
           taskText: task.taskText,
-          importance: task.importance,
+          importance: task.importance, // Ensure correct importance is used
           isDeleted: task.isDeleted,
         }));
 
@@ -42,6 +42,7 @@ function App() {
       console.error("Error fetching tasks: ", error);
     }
   };
+
 
   useEffect(() => {
     getAllTasks();
@@ -70,16 +71,19 @@ function App() {
 
   const addTask = async (event) => {
     event.preventDefault();
+
     const importanceMap = {
       Low: 0,
       Medium: 1,
       High: 2,
     };
+
     const task = {
       taskText: input,
-      importance: importanceMap[importance],
+      importance: importanceMap[importance], // Map string to integer
       isDeleted: false,
     };
+
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -91,9 +95,15 @@ function App() {
           signer
         );
 
-        await TaskContract.addTask(task.taskText, task.importance, task.isDeleted);
-        setInput('');
-        setImportance('Low');
+        console.log("Sending transaction to add task...");
+        const tx = await TaskContract.addTask(task.taskText, task.importance, task.isDeleted);
+
+        // Wait for the transaction to be mined
+        console.log("Transaction sent. Waiting for confirmation...");
+        await tx.wait();
+        console.log("Transaction confirmed. Task added!");
+
+        // Fetch updated tasks from the blockchain
         getAllTasks();
       } else {
         console.error("Ethereum object does not exist.");
@@ -101,6 +111,10 @@ function App() {
     } catch (error) {
       console.error("Error adding task: ", error);
     }
+
+    // Reset input fields after adding the task
+    setInput('');
+    setImportance('Low');
   };
 
   const deleteTask = (key) => async () => {
@@ -115,7 +129,15 @@ function App() {
           signer
         );
 
-        await TaskContract.deleteTask(key, true);
+        console.log("Sending transaction to delete task...");
+        const tx = await TaskContract.deleteTask(key, true);
+
+        // Wait for the transaction to be mined
+        console.log("Transaction sent. Waiting for confirmation...");
+        await tx.wait();
+        console.log("Transaction confirmed. Task deleted!");
+
+        // Fetch updated tasks from the blockchain
         getAllTasks();
       } else {
         console.error("Ethereum object does not exist.");
@@ -124,6 +146,7 @@ function App() {
       console.error("Error deleting task: ", error);
     }
   };
+
 
   return (
     <div className="app-container flex flex-col items-center">
