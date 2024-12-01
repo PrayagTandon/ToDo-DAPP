@@ -1,38 +1,57 @@
-.App {
+.app-container {
+  font-family: "Arial", sans-serif;
   text-align: center;
+  margin-top: 20px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.notebook {
+  border: 2px solid #ddd;
+  padding: 20px;
+  width: 80%;
+  max-width: 600px;
+  margin: 20px auto;
+  background-color: #fdf5e6;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.header-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px 10px 0 0;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.to-do-heading {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.form-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 10px;
 }
 
-.App-link {
-  color: #61dafb;
+.task-input {
+  width: 100%;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.importance-select {
+  width: 100%;
+}
+
+.add-button {
+  width: 100%;
+}
+
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.task-list li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
 }

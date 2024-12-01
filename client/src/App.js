@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { TextField, Button, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import Task from './Task';
 import './App.css';
 import { TaskContractAddress } from './config.js';
 import TaskAbi from './TaskContract.json';
+import NotebookHeader from './notebook-header.jpg';
 const { ethers } = require("ethers");
 
 function App() {
@@ -26,12 +27,10 @@ function App() {
         );
 
         const allTasks = await TaskContract.getMyTasks();
-
-        // Process tasks correctly, assuming `id` is already a number
         const processedTasks = allTasks.map((task) => ({
-          id: task.id, // Directly use task.id
+          id: task.id,
           taskText: task.taskText,
-          importance: task.importance, // Enum value (0 = Low, 1 = Medium, 2 = High)
+          importance: task.importance,
           isDeleted: task.isDeleted,
         }));
 
@@ -71,19 +70,16 @@ function App() {
 
   const addTask = async (event) => {
     event.preventDefault();
-
     const importanceMap = {
       Low: 0,
       Medium: 1,
       High: 2,
     };
-
     const task = {
       taskText: input,
-      importance: importanceMap[importance], // Map string to integer
+      importance: importanceMap[importance],
       isDeleted: false,
     };
-
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -95,10 +91,9 @@ function App() {
           signer
         );
 
-        // Pass the mapped integer for importance
         await TaskContract.addTask(task.taskText, task.importance, task.isDeleted);
         setInput('');
-        setImportance('Low'); // Reset importance to default
+        setImportance('Low');
         getAllTasks();
       } else {
         console.error("Ethereum object does not exist.");
@@ -107,7 +102,6 @@ function App() {
       console.error("Error adding task: ", error);
     }
   };
-
 
   const deleteTask = (key) => async () => {
     try {
@@ -132,30 +126,30 @@ function App() {
   };
 
   return (
-    <div>
+    <div className="app-container flex flex-col items-center">
       {currentAccount === '' ? (
-        <div className="flex justify-center items-center">
-          <Button
-            variant="contained"
-            color="info"
-            className="mt-10 text-2xl"
-            onClick={connectWallet}
-          >
-            Connect 🦊 MetaMask Wallet ➡ Sepolia Testnet
-          </Button>
-        </div>
+        <Button
+          variant="contained"
+          color="info"
+          className="connect-button"
+          onClick={connectWallet}
+        >
+          Connect 🦊 MetaMask Wallet ➡ Sepolia Testnet
+        </Button>
       ) : correctNetwork ? (
-        <div className="App">
-          <form className="flex flex-col items-center gap-4">
+        <div className="notebook">
+          <img src={NotebookHeader} alt="Notebook Header" className="header-image" />
+          <h1 className="to-do-heading">To-Do List</h1>
+          <form className="form-container">
             <TextField
               id="outlined-basic"
               label="Task"
               value={input}
               onChange={(event) => setInput(event.target.value)}
               variant="outlined"
-              className="w-96"
+              className="task-input"
             />
-            <FormControl className="w-96">
+            <FormControl className="importance-select">
               <InputLabel>Importance</InputLabel>
               <Select
                 value={importance}
@@ -170,25 +164,25 @@ function App() {
               variant="contained"
               color="primary"
               onClick={addTask}
-              className="w-96"
+              className="add-button"
             >
               Add Task
             </Button>
           </form>
-          <ul className="mt-10">
-            {tasks.map((item) => (
+          <ul className="task-list">
+            {tasks.map((task) => (
               <Task
-                key={item.id}
-                taskText={item.taskText}
-                importance={item.importance}
-                onClick={deleteTask(item.id)}
+                key={task.id}
+                taskText={task.taskText}
+                importance={task.importance}
+                onClick={deleteTask(task.id)}
               />
             ))}
           </ul>
         </div>
       ) : (
-        <div className="flex justify-center items-center text-2xl font-bold">
-          Connect to the Ethereum Sepolia Testnet and reload the page.
+        <div className="flex justify-center items-center">
+          <div className="text-xl font-bold">Connect to Sepolia Testnet</div>
         </div>
       )}
     </div>
